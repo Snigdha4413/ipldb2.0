@@ -1,0 +1,744 @@
+/* =============================================
+   IPL AUCTION — MASTER STYLESHEET
+   Fonts: Bebas Neue (display) + DM Sans (body)
+   Theme: Dark stadium / broadcast aesthetic
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0f0f1a;
+  --bg2:        #14141f;
+  --surface:    rgba(255,255,255,0.04);
+  --border:     rgba(255,255,255,0.08);
+  --text:       #e8e8f0;
+  --muted:      rgba(255,255,255,0.38);
+  --gold:       #ffd700;
+  --red:        #ff4444;
+  --orange:     #ff6f00;
+  --green:      #44ff88;
+  --white:      #ffffff;
+  --radius-lg:  18px;
+  --radius-md:  12px;
+  --radius-sm:  8px;
+  --shadow:     0 8px 32px rgba(0,0,0,0.4);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* =============================================
+   TOPBAR
+   ============================================= */
+.topbar {
+  background: rgba(10,10,20,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 62px;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-brand span { color: var(--white); }
+
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--text); }
+
+.live-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,68,68,0.12);
+  border: 1px solid rgba(255,68,68,0.3);
+  color: #ff8080;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.live-pill:hover { background: rgba(255,68,68,0.2); }
+.live-pill.admin-pill {
+  background: rgba(255,215,0,0.08);
+  border-color: rgba(255,215,0,0.25);
+  color: var(--gold);
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.username {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.logout-btn {
+  font-size: 0.83rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+.logout-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+
+/* =============================================
+   LOGIN PAGE
+   ============================================= */
+.login-page {
+  background: #070710;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.login-bg {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+}
+.login-bg-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40vw;
+  color: rgba(255,215,0,0.025);
+  user-select: none;
+  line-height: 1;
+}
+
+.login-box {
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 50px 44px;
+  width: 380px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.login-logo { font-size: 3rem; margin-bottom: 12px; }
+
+.login-box h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  letter-spacing: 3px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+}
+
+.login-box input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--white);
+  padding: 13px 16px;
+  font-size: 0.95rem;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-box input:focus { border-color: var(--gold); }
+.login-box input::placeholder { color: rgba(255,255,255,0.28); }
+
+.login-box button {
+  width: 100%;
+  background: var(--gold);
+  color: #0a0a14;
+  border: none;
+  padding: 13px;
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.login-box button:hover { opacity: 0.9; transform: scale(1.01); }
+
+.error {
+  background: rgba(255,68,68,0.1);
+  border: 1px solid rgba(255,68,68,0.3);
+  color: #ff8080;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+
+/* =============================================
+   HOME PAGE — HERO + TEAMS
+   ============================================= */
+.page-hero {
+  text-align: center;
+  padding: 56px 20px 28px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  letter-spacing: 6px;
+  color: var(--white);
+  line-height: 1;
+}
+.hero-title span { color: var(--gold); }
+.hero-sub { color: var(--muted); font-size: 1rem; margin-top: 10px; }
+
+.auction-room-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(255,68,68,0.07);
+  border-top: 1px solid rgba(255,68,68,0.15);
+  border-bottom: 1px solid rgba(255,68,68,0.15);
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  color: #ff8080;
+  font-weight: 500;
+}
+.auction-room-banner.client { color: #ff8080; }
+
+.btn-auction-room {
+  background: var(--red);
+  color: var(--white);
+  text-decoration: none;
+  padding: 7px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+.btn-auction-room:hover { opacity: 0.85; }
+
+.teams-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 30px 60px;
+}
+
+.team-card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 24px 28px;
+  width: 210px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  overflow: hidden;
+}
+.team-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--team-color, var(--gold));
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--team-color, var(--gold));
+}
+.team-card-glow {
+  position: absolute;
+  top: -40px; left: 50%;
+  transform: translateX(-50%);
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, var(--team-color, rgba(255,215,0,0.3)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.team-card:hover .team-card-glow { opacity: 0.4; }
+
+.team-logo-wrap { height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.team-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+.team-logo-fallback {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--team-color, var(--gold));
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.team-abbr {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+.team-fullname {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 4px 0 14px;
+  line-height: 1.3;
+}
+.team-cta {
+  font-size: 0.8rem;
+  color: var(--team-color, var(--gold));
+  font-weight: 600;
+}
+
+
+/* =============================================
+   TEAM PAGE — HERO
+   ============================================= */
+.team-hero {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6)),
+              linear-gradient(to right, var(--team-color, #1a1a2e), transparent);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 40px 32px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  overflow: hidden;
+}
+.team-hero-logo {
+  height: 90px; width: auto;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+  flex-shrink: 0;
+}
+.team-hero-text h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+.team-hero-text p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+
+
+/* =============================================
+   PLAYER CARDS
+   ============================================= */
+.players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 22px;
+  padding: 32px;
+}
+
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  width: 210px;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  position: relative;
+}
+.card:hover {
+  transform: translateY(-5px);
+  border-color: var(--team-color, var(--gold));
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+}
+
+.card-photo-wrap {
+  position: relative;
+  height: 170px;
+  background: rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.card-photo {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.card-photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: rgba(255,255,255,0.15);
+  background: linear-gradient(160deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+}
+.card-role-badge {
+  position: absolute;
+  bottom: 10px; left: 10px;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.card-body { padding: 14px 16px 18px; }
+.card-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  color: var(--white);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-country { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; }
+
+.card-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.stat {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+  flex: 1;
+  min-width: 42px;
+}
+.stat-val {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-lbl {
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-bid-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 6px;
+}
+.card-bid-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+.card-bid-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.card-base-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1;
+}
+.card-bidder { font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; min-height: 16px; }
+.card-bidder.muted { color: rgba(255,255,255,0.2); }
+
+.card-btn {
+  width: 100%;
+  background: var(--team-color, var(--orange));
+  color: var(--white);
+  border: none;
+  padding: 9px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.card-btn:hover { opacity: 0.85; }
+
+
+/* =============================================
+   PLAYER DETAIL PAGE
+   ============================================= */
+.player-page { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+
+.player-profile-card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.player-profile-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--team-color, #1a1a2e) 40%, transparent),
+    rgba(15,15,26,0.95));
+}
+.player-profile-inner {
+  position: relative;
+  display: flex;
+  gap: 28px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+.player-photo-large-wrap {
+  flex-shrink: 0;
+  width: 150px; height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.player-photo-large {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+}
+.player-photo-large-fallback {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.player-profile-info { flex: 1; }
+.player-role-tag {
+  display: inline-block;
+  background: rgba(255,215,0,0.12);
+  border: 1px solid rgba(255,215,0,0.3);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.player-profile-info h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.player-country-tag { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+
+.player-big-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.big-stat {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 70px;
+}
+.big-stat-val {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.big-stat-lbl {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Bid section */
+.player-auction-section { display: flex; flex-direction: column; gap: 16px; }
+
+.bid-status-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 28px;
+  border-left: 3px solid var(--team-color, var(--gold));
+}
+.bid-status-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.bid-status-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.bid-status-leader { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.bid-base {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: var(--muted);
+}
+
+.bid-form-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 28px;
+}
+.bid-form-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.bid-as { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; }
+.bid-input-row {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.bid-input-row:focus-within { border-color: var(--gold); }
+.bid-rupee, .bid-lakhs {
+  padding: 0 14px;
+  color: var(--gold);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.bid-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  padding: 13px 0;
+  font-size: 1rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+}
+.bid-input-row input::placeholder { color: var(--muted); }
+.bid-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  color: var(--white);
+  border: none;
+  padding: 13px;
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.bid-submit-btn:hover { opacity: 0.9; transform: scale(1.01); }
+
+.admin-notice {
+  background: rgba(255,165,0,0.07);
+  border: 1px solid rgba(255,165,0,0.2);
+  color: #ffa040;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.bid-history-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 28px;
+}
+.bid-history-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 14px;
+}
+
+.bid-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.bid-table thead th {
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+.bid-table tbody td { padding: 11px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.bid-table tbody tr.top-bid td { color: var(--gold); }
+.bid-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+.no-bids { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 20px; }
+.muted { color: var(--muted) !important; }
+
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 700px) {
+  .topbar { padding: 0 16px; }
+  .username { display: none; }
+  .player-profile-inner { flex-direction: column; align-items: center; text-align: center; }
+  .player-big-stats { justify-content: center; }
+  .bid-status-card { flex-direction: column; gap: 16px; text-align: center; }
+  .auction-layout { grid-template-columns: 1fr; }
+  .auction-sidebar { display: none; }
+  .team-hero { flex-direction: column; text-align: center; padding: 28px 20px; }
+}
