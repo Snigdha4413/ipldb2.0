@@ -611,10 +611,11 @@
       else timerCircle.style.stroke = '#ff4444';
     }
 
-    // Poll server state
+    // Poll server state every second
     async function pollState() {
       try {
         const res = await fetch('/auction/state');
+        if (!res.ok) return;
         const data = await res.json();
 
         // Sync timer from server
@@ -622,39 +623,50 @@
         isPaused = data.paused;
         updateTimerUI(timeRemaining);
 
-        // Update bid amount
+        // Update bid amount if changed
         if (data.highest !== lastBidAmount) {
           lastBidAmount = data.highest;
+
           if (liveBidAmount) {
             liveBidAmount.textContent = '₹' + data.highest + 'L';
             liveBidAmount.style.animation = 'none';
-            setTimeout(() => liveBidAmount.style.animation = 'bidPop 0.4s ease', 10);
+            void liveBidAmount.offsetWidth; // force reflow
+            liveBidAmount.style.animation = 'bidPop 0.4s ease';
           }
           if (liveBidLeader) {
             liveBidLeader.textContent = data.top_bidder ? '🏆 ' + data.top_bidder : 'No bids yet';
           }
-          // Update minimum bid input
-          if (bidInput) bidInput.min = data.highest + 1;
-          // Update feed
-          if (liveFeed && data.recent_bids.length > 0) {
-            liveFeed.innerHTML = data.recent_bids.map((b, i) =>
-              `<div class="feed-item ${i === 0 ? 'top' : ''}">
-                <span class="feed-bidder">${b.bidder}</span>
-                <span class="feed-amount">₹${b.amount}L</span>
-              </div>`
-            ).join('');
+          // Update minimum bid input placeholder
+          if (bidInput) {
+            bidInput.min = data.highest + 1;
+            bidInput.placeholder = 'Amount in Lakhs (min ₹' + (data.highest + 1) + 'L)';
+          }
+          // Update live feed
+          if (liveFeed) {
+            if (data.recent_bids.length > 0) {
+              liveFeed.innerHTML = data.recent_bids.map((b, i) =>
+                `<div class="feed-item ${i === 0 ? 'top' : ''}">
+                  <span class="feed-bidder">${b.bidder}</span>
+                  <span class="feed-amount">₹${b.amount}L</span>
+                </div>`
+              ).join('');
+            } else {
+              liveFeed.innerHTML = '<div class="feed-empty">No bids yet</div>';
+            }
           }
         }
 
-        // Reload if player changed
-        if (data.active_player_id !== {{ active_player.id if active_player else 'null' }}) {
+        // Reload if active player changed
+        const currentPlayerId = {{ active_player.id if active_player else 'null' }};
+        if (data.active_player_id !== currentPlayerId) {
           window.location.reload();
         }
 
-      } catch(e) { console.log('Poll error', e); }
+      } catch(e) { console.log('Poll error:', e); }
     }
 
-    setInterval(pollState, 2000);
+    // Poll every 1 second for near real-time updates
+    setInterval(pollState, 1000);
   </script>
 
   <style>
