@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ player.name }} — IPL Auction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  {% set back_url = "/team/" + player.team %}
+  {% set back_label = player.team %}
+  {% include 'topbar.html' %}
+
+  {% set team_colors = {
+    'RCB': '#cc0000', 'MI': '#004ba0', 'CSK': '#f5a623', 'RR': '#d4267a', 'GT': '#1c4973'
+  } %}
+  {% set color = team_colors.get(player.team, '#1a1a2e') %}
+
+  <div class="player-page">
+
+    <div class="player-profile-card" style="--team-color: {{ color }}">
+      <div class="player-profile-bg"></div>
+      <div class="player-profile-inner">
+        <div class="player-photo-large-wrap">
+          {% if player.photo_url %}
+          <img src="{{ player.photo_url }}" alt="{{ player.name }}" class="player-photo-large"
+               onerror="this.parentElement.innerHTML='<div class=\'player-photo-large-fallback\'>{{ player.name[0] }}</div>'">
+          {% else %}
+          <div class="player-photo-large-fallback">{{ player.name[0] }}</div>
+          {% endif %}
+        </div>
+        <div class="player-profile-info">
+          <div class="player-role-tag">{{ player.role }}</div>
+          <h1>{{ player.name }}</h1>
+          <p class="player-country-tag">🌍 {{ player.country }} &nbsp;·&nbsp; 🏏 {{ player.team }}</p>
+          <div class="player-big-stats">
+            <div class="big-stat">
+              <span class="big-stat-val">{{ player.ipl_matches }}</span>
+              <span class="big-stat-lbl">Matches</span>
+            </div>
+            {% if player.role in ['Batsman', 'Wicketkeeper', 'All-Rounder'] %}
+            <div class="big-stat">
+              <span class="big-stat-val">{{ player.ipl_runs }}</span>
+              <span class="big-stat-lbl">IPL Runs</span>
+            </div>
+            <div class="big-stat">
+              <span class="big-stat-val">{{ "%.0f"|format(player.strike_rate) }}</span>
+              <span class="big-stat-lbl">Strike Rate</span>
+            </div>
+            {% endif %}
+            {% if player.role in ['Bowler', 'All-Rounder'] %}
+            <div class="big-stat">
+              <span class="big-stat-val">{{ player.ipl_wickets }}</span>
+              <span class="big-stat-lbl">Wickets</span>
+            </div>
+            <div class="big-stat">
+              <span class="big-stat-val">{{ player.economy }}</span>
+              <span class="big-stat-lbl">Economy</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="player-auction-section">
+
+      <div class="bid-status-card" style="--team-color: {{ color }}">
+        <div class="bid-status-left">
+          <p class="bid-status-label">Current Highest Bid</p>
+          <p class="bid-status-value">₹{{ highest }}L</p>
+          {% if top_bidder %}
+          <p class="bid-status-leader">🏆 {{ top_bidder }}</p>
+          {% else %}
+          <p class="bid-status-leader muted">No bids yet</p>
+          {% endif %}
+        </div>
+        <div class="bid-status-right">
+          <p class="bid-status-label">Base Price</p>
+          <p class="bid-base">₹{{ player.base_price }}L</p>
+        </div>
+      </div>
+
+      {% if not is_admin %}
+      <div class="bid-form-card">
+        <h3>Place Your Bid</h3>
+        <p class="bid-as">Bidding as <strong>{{ user }}</strong> · Min ₹{{ highest + 1 }}L</p>
+        <form action="/bid" method="POST">
+          <input type="hidden" name="player_id" value="{{ player.id }}">
+          <div class="bid-input-row">
+            <span class="bid-rupee">₹</span>
+            <input type="number" name="bid_amount"
+                   placeholder="Amount in Lakhs"
+                   min="{{ highest + 1 }}" required>
+            <span class="bid-lakhs">L</span>
+          </div>
+          <button type="submit" class="bid-submit-btn">Place Bid 🏏</button>
+        </form>
+      </div>
+      {% else %}
+      <div class="admin-notice">👁️ Admin View — Bidding Disabled</div>
+      {% endif %}
+
+      {% if bid_history %}
+      <div class="bid-history-card">
+        <h3>Bid History</h3>
+        <table class="bid-table">
+          <thead><tr><th>#</th><th>Bidder</th><th>Amount</th><th>Time</th></tr></thead>
+          <tbody>
+            {% for b in bid_history %}
+            <tr {% if loop.first %}class="top-bid"{% endif %}>
+              <td>{{ loop.index }}</td>
+              <td>{{ b.bidder }}</td>
+              <td>₹{{ b.bid_amount }}L</td>
+              <td>{{ b.bid_time.strftime('%d %b, %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="no-bids">No bids placed yet. Be the first!</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+</body>
+</html>
