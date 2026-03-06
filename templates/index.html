@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPL Auction 2024</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  {% include 'topbar.html' %}
+
+  <div class="page-hero">
+    <h1 class="hero-title">IPL AUCTION <span>2024</span></h1>
+    <p class="hero-sub">Select a franchise to view their squad</p>
+  </div>
+
+  {% if is_admin %}
+  <div class="auction-room-banner">
+    <span>🎙️ Admin Controls</span>
+    <a href="/auction" class="btn-auction-room">Open Auction Room →</a>
+  </div>
+  {% else %}
+  <div class="auction-room-banner client">
+    <span>🔴 Live Auction in Progress</span>
+    <a href="/auction" class="btn-auction-room">Join Auction Room →</a>
+  </div>
+  {% endif %}
+
+  <div class="teams-grid">
+    {% set team_logos = {
+      'RCB': 'https://upload.wikimedia.org/wikipedia/en/2/2a/Royal_Challengers_Bangalore_2020.svg',
+      'MI':  'https://upload.wikimedia.org/wikipedia/en/c/cd/Mumbai_Indians_Logo.svg',
+      'CSK': 'https://upload.wikimedia.org/wikipedia/en/2/2b/Chennai_Super_Kings_Logo.svg',
+      'RR':  'https://upload.wikimedia.org/wikipedia/en/6/60/Rajasthan_Royals_Logo.svg',
+      'GT':  'https://upload.wikimedia.org/wikipedia/en/0/09/Gujarat_Titans_Logo.svg'
+    } %}
+    {% set team_colors = {
+      'RCB': '#cc0000',
+      'MI':  '#004ba0',
+      'CSK': '#f5a623',
+      'RR':  '#d4267a',
+      'GT':  '#1c4973'
+    } %}
+    {% set team_names = {
+      'RCB': 'Royal Challengers Bangalore',
+      'MI':  'Mumbai Indians',
+      'CSK': 'Chennai Super Kings',
+      'RR':  'Rajasthan Royals',
+      'GT':  'Gujarat Titans'
+    } %}
+
+    {% for t in teams %}
+    {% set logo = team_logos.get(t.team, '') %}
+    {% set color = team_colors.get(t.team, '#1a1a2e') %}
+    {% set fullname = team_names.get(t.team, t.team) %}
+    <a href="/team/{{ t.team }}" class="team-card" style="--team-color: {{ color }}">
+      <div class="team-card-glow"></div>
+      <div class="team-logo-wrap">
+        {% if logo %}
+        <img src="{{ logo }}" alt="{{ t.team }}" class="team-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="team-logo-fallback" style="display:none">{{ t.team }}</div>
+        {% else %}
+        <div class="team-logo-fallback">{{ t.team }}</div>
+        {% endif %}
+      </div>
+      <div class="team-abbr">{{ t.team }}</div>
+      <div class="team-fullname">{{ fullname }}</div>
+      <div class="team-cta">View Squad →</div>
+    </a>
+    {% endfor %}
+  </div>
+
+</body>
+</html>
