@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔴 Live Auction Room — IPL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* ── Auction Room Specific ── */
+    body { background: #0a0a14; color: #e8e8f0; }
+
+    .auction-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 0;
+      min-height: calc(100vh - 62px);
+    }
+
+    /* LEFT PANEL */
+    .auction-main {
+      padding: 32px 36px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .auction-stage-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 4px;
+      color: #ff4444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      background: #ff4444;
+      border-radius: 50%;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* TIMER */
+    .timer-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .timer-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+    }
+    .timer-ring-wrap svg {
+      transform: rotate(-90deg);
+    }
+    .timer-track {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 8;
+    }
+    .timer-progress {
+      fill: none;
+      stroke: #ff4444;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke 0.3s;
+    }
+    .timer-number {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .timer-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .timer-controls form { margin: 0; }
+    .btn-pause {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-pause:hover { background: rgba(255,255,255,0.15); }
+    .btn-reset {
+      background: rgba(255,68,68,0.1);
+      color: #ff8080;
+      border: 1px solid rgba(255,68,68,0.3);
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-reset:hover { background: rgba(255,68,68,0.2); }
+
+    /* ACTIVE PLAYER DISPLAY */
+    .active-player-display {
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .active-photo {
+      width: 130px;
+      height: 160px;
+      border-radius: 14px;
+      object-fit: cover;
+      object-position: top;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .active-photo-placeholder {
+      width: 130px;
+      height: 160px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      color: rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .active-player-info { flex: 1; }
+    .active-player-role {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 6px;
+    }
+    .active-player-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      line-height: 1;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .active-player-meta {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 18px;
+    }
+
+    .active-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .active-stat {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .active-stat-val {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      color: #ffd700;
+    }
+    .active-stat-lbl {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* BID STATUS */
+    .live-bid-status {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .live-bid-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    .live-bid-box.highlight {
+      background: rgba(255,215,0,0.06);
+      border-color: rgba(255,215,0,0.2);
+    }
+    .live-bid-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .live-bid-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: #ffd700;
+      line-height: 1;
+    }
+    .live-bid-leader { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+    /* BID FORM (client) */
+    .auction-bid-form {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 22px;
+    }
+    .auction-bid-form h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .auction-input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .auction-input-row input {
+      flex: 1;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+    }
+    .auction-input-row input:focus { border-color: #ffd700; }
+    .auction-input-row input::placeholder { color: rgba(255,255,255,0.3); }
+    .btn-bid-now {
+      background: linear-gradient(135deg, #ff6f00, #ff4444);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn-bid-now:hover { opacity: 0.9; transform: scale(1.02); }
+    .bid-hint-text { font-size: 0.78rem; color: rgba(255,255,255,0.35); margin-top: 8px; }
+
+    /* No active player */
+    .no-active-player {
+      text-align: center;
+      padding: 80px 20px;
+      color: rgba(255,255,255,0.3);
+    }
+    .no-active-player .big-icon { font-size: 4rem; margin-bottom: 16px; }
+    .no-active-player h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; color: rgba(255,255,255,0.4); }
+
+    /* RIGHT PANEL */
+    .auction-sidebar {
+      display: flex;
+      flex-direction: column;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .sidebar-section {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .sidebar-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+    }
+
+    /* Admin player selector */
+    .player-select-form select {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      margin-bottom: 10px;
+      appearance: none;
+    }
+    .player-select-form select option { background: #1a1a2e; }
+    .btn-go-live {
+      width: 100%;
+      background: linear-gradient(135deg, #ff4444, #ff6f00);
+      color: #fff;
+      border: none;
+      padding: 11px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-go-live:hover { opacity: 0.85; }
+
+    /* Live feed */
+    .live-feed {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 340px;
+    }
+    .feed-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      animation: slideIn 0.3s ease;
+    }
+    .feed-item.top { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.2); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .feed-bidder { font-weight: 600; font-size: 0.88rem; color: #e8e8f0; }
+    .feed-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: #ffd700; }
+    .feed-empty { color: rgba(255,255,255,0.25); font-size: 0.85rem; text-align: center; padding: 20px 0; }
+
+    /* Paused overlay */
+    .paused-banner {
+      background: rgba(255,165,0,0.1);
+      border: 1px solid rgba(255,165,0,0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #ffa040;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    /* Ended banner */
+    .ended-banner {
+      background: rgba(255,68,68,0.08);
+      border: 1px solid rgba(255,68,68,0.25);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #ff8080;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'topbar.html' %}
+
+  <div class="auction-layout">
+
+    <!-- LEFT: Main Stage -->
+    <div class="auction-main">
+
+      <div class="auction-stage-label">
+        <div class="pulse-dot"></div>
+        LIVE AUCTION ROOM
+      </div>
+
+      {% if active_player %}
+
+        {% if paused %}
+        <div class="paused-banner">⏸️ Auction Paused — Timer frozen at {{ time_remaining }}s</div>
+        {% elif time_remaining == 0 %}
+        <div class="ended-banner">⏱️ Time's Up! Admin can select next player or reset timer.</div>
+        {% endif %}
+
+        <!-- Timer -->
+        <div class="timer-section">
+          <div class="timer-ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="timer-track" cx="60" cy="60" r="50"/>
+              <circle class="timer-progress" cx="60" cy="60" r="50"
+                      id="timerCircle"
+                      style="stroke-dashoffset: {{ (1 - time_remaining/60) * 314 }}"/>
+            </svg>
+            <div class="timer-number" id="timerDisplay">{{ time_remaining }}</div>
+          </div>
+
+          {% if is_admin %}
+          <div class="timer-controls">
+            <form action="/auction/pause" method="POST">
+              <button class="btn-pause" type="submit">
+                {{ "▶ Resume" if paused else "⏸ Pause" }}
+              </button>
+            </form>
+            <form action="/auction/reset-timer" method="POST">
+              <button class="btn-reset" type="submit">↺ Reset 60s</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Active Player -->
+        <div class="active-player-display">
+          {% if active_player.photo_url %}
+          <img src="{{ active_player.photo_url }}" alt="{{ active_player.name }}"
+               class="active-photo"
+               onerror="this.parentElement.innerHTML='<div class=\'active-photo-placeholder\'>{{ active_player.name[0] }}</div>'">
+          {% else %}
+          <div class="active-photo-placeholder">{{ active_player.name[0] }}</div>
+          {% endif %}
+
+          <div class="active-player-info">
+            <div class="active-player-role">{{ active_player.role }}</div>
+            <div class="active-player-name">{{ active_player.name }}</div>
+            <div class="active-player-meta">{{ active_player.country }} · {{ active_player.team }} · Base ₹{{ active_player.base_price }}L</div>
+            <div class="active-stats-grid">
+              <div class="active-stat">
+                <span class="active-stat-val">{{ active_player.ipl_matches }}</span>
+                <span class="active-stat-lbl">Matches</span>
+              </div>
+              {% if active_player.role in ['Batsman','Wicketkeeper','All-Rounder'] %}
+              <div class="active-stat">
+                <span class="active-stat-val">{{ active_player.ipl_runs }}</span>
+                <span class="active-stat-lbl">Runs</span>
+              </div>
+              <div class="active-stat">
+                <span class="active-stat-val">{{ "%.0f"|format(active_player.strike_rate) }}</span>
+                <span class="active-stat-lbl">SR</span>
+              </div>
+              {% endif %}
+              {% if active_player.role in ['Bowler','All-Rounder'] %}
+              <div class="active-stat">
+                <span class="active-stat-val">{{ active_player.ipl_wickets }}</span>
+                <span class="active-stat-lbl">Wickets</span>
+              </div>
+              <div class="active-stat">
+                <span class="active-stat-val">{{ active_player.economy }}</span>
+                <span class="active-stat-lbl">Economy</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Bid Status -->
+        <div class="live-bid-status">
+          <div class="live-bid-box highlight">
+            <div class="live-bid-label">Current Bid</div>
+            <div class="live-bid-amount" id="liveBidAmount">₹{{ highest }}L</div>
+            <div class="live-bid-leader" id="liveBidLeader">
+              {{ "🏆 " + top_bidder if top_bidder else "No bids yet" }}
+            </div>
+          </div>
+          <div class="live-bid-box">
+            <div class="live-bid-label">Base Price</div>
+            <div class="live-bid-amount">₹{{ active_player.base_price }}L</div>
+            <div class="live-bid-leader">Starting bid</div>
+          </div>
+        </div>
+
+        <!-- Bid Form (clients only) -->
+        {% if not is_admin %}
+        {% if not paused and time_remaining > 0 %}
+        <div class="auction-bid-form">
+          <h3>PLACE YOUR BID</h3>
+          <form action="/bid" method="POST">
+            <input type="hidden" name="player_id" value="{{ active_player.id }}">
+            <input type="hidden" name="from_auction" value="1">
+            <div class="auction-input-row">
+              <input type="number" name="bid_amount"
+                     id="bidInput"
+                     placeholder="Amount in Lakhs (min ₹{{ highest + 1 }}L)"
+                     min="{{ highest + 1 }}" required>
+              <button type="submit" class="btn-bid-now">BID NOW 🏏</button>
+            </div>
+          </form>
+          <p class="bid-hint-text">Bidding as <strong>{{ user }}</strong> · Minimum ₹{{ highest + 1 }}L</p>
+        </div>
+        {% else %}
+        <div class="admin-notice" style="margin-top:0">
+          {{ "⏸️ Bidding paused" if paused else "⏱️ Time's up — bidding closed" }}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="admin-notice" style="margin-top:0">👁️ Admin View — Bidding Disabled</div>
+        {% endif %}
+
+      {% else %}
+        <div class="no-active-player">
+          <div class="big-icon">🏟️</div>
+          <h2>Waiting for Auction to Begin</h2>
+          <p>{% if is_admin %}Use the panel on the right to select a player and go live.{% else %}The admin will start the auction shortly. Stay tuned!{% endif %}</p>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT: Sidebar -->
+    <div class="auction-sidebar">
+
+      {% if is_admin %}
+      <div class="sidebar-section">
+        <div class="sidebar-title">SELECT PLAYER</div>
+        <form class="player-select-form" action="/auction/set-player" method="POST">
+          <select name="player_id">
+            <option value="">— Choose a player —</option>
+            {% set current_team = namespace(val='') %}
+            {% for p in all_players %}
+              {% if p.team != current_team.val %}
+                {% if current_team.val != '' %}</optgroup>{% endif %}
+                <optgroup label="{{ p.team }}">
+                {% set current_team.val = p.team %}
+              {% endif %}
+              <option value="{{ p.id }}" {% if active_player and active_player.id == p.id %}selected{% endif %}>
+                {{ p.name }}
+              </option>
+            {% endfor %}
+            </optgroup>
+          </select>
+          <button type="submit" class="btn-go-live">🔴 Go Live</button>
+        </form>
+      </div>
+      {% endif %}
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">LIVE BID FEED</div>
+      </div>
+      <div class="live-feed" id="liveFeed">
+        {% if bid_history %}
+          {% for b in bid_history %}
+          <div class="feed-item {% if loop.first %}top{% endif %}">
+            <span class="feed-bidder">{{ b.bidder }}</span>
+            <span class="feed-amount">₹{{ b.bid_amount }}L</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="feed-empty">No bids yet</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Live polling every 2 seconds ──
+    let lastBidAmount = {{ highest }};
+    let timeRemaining = {{ time_remaining }};
+    let isPaused = {{ 'true' if paused else 'false' }};
+    const isAdmin = {{ 'true' if is_admin else 'false' }};
+    const TOTAL = 60;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerCircle = document.getElementById('timerCircle');
+    const liveBidAmount = document.getElementById('liveBidAmount');
+    const liveBidLeader = document.getElementById('liveBidLeader');
+    const liveFeed = document.getElementById('liveFeed');
+    const bidInput = document.getElementById('bidInput');
+
+    // Local countdown (smooth)
+    let localTimer = setInterval(() => {
+      if (!isPaused && timeRemaining > 0) {
+        timeRemaining--;
+        updateTimerUI(timeRemaining);
+      }
+    }, 1000);
+
+    function updateTimerUI(t) {
+      if (!timerDisplay) return;
+      timerDisplay.textContent = t;
+      const offset = (1 - t / TOTAL) * 314;
+      timerCircle.style.strokeDashoffset = offset;
+      // Color shifts: green → yellow → red
+      if (t > 20) timerCircle.style.stroke = '#44ff88';
+      else if (t > 10) timerCircle.style.stroke = '#ffd700';
+      else timerCircle.style.stroke = '#ff4444';
+    }
+
+    // Poll server state
+    async function pollState() {
+      try {
+        const res = await fetch('/auction/state');
+        const data = await res.json();
+
+        // Sync timer from server
+        timeRemaining = data.time_remaining;
+        isPaused = data.paused;
+        updateTimerUI(timeRemaining);
+
+        // Update bid amount
+        if (data.highest !== lastBidAmount) {
+          lastBidAmount = data.highest;
+          if (liveBidAmount) {
+            liveBidAmount.textContent = '₹' + data.highest + 'L';
+            liveBidAmount.style.animation = 'none';
+            setTimeout(() => liveBidAmount.style.animation = 'bidPop 0.4s ease', 10);
+          }
+          if (liveBidLeader) {
+            liveBidLeader.textContent = data.top_bidder ? '🏆 ' + data.top_bidder : 'No bids yet';
+          }
+          // Update minimum bid input
+          if (bidInput) bidInput.min = data.highest + 1;
+          // Update feed
+          if (liveFeed && data.recent_bids.length > 0) {
+            liveFeed.innerHTML = data.recent_bids.map((b, i) =>
+              `<div class="feed-item ${i === 0 ? 'top' : ''}">
+                <span class="feed-bidder">${b.bidder}</span>
+                <span class="feed-amount">₹${b.amount}L</span>
+              </div>`
+            ).join('');
+          }
+        }
+
+        // Reload if player changed
+        if (data.active_player_id !== {{ active_player.id if active_player else 'null' }}) {
+          window.location.reload();
+        }
+
+      } catch(e) { console.log('Poll error', e); }
+    }
+
+    setInterval(pollState, 2000);
+  </script>
+
+  <style>
+    @keyframes bidPop {
+      0% { transform: scale(1); color: #ffd700; }
+      50% { transform: scale(1.2); color: #fff; }
+      100% { transform: scale(1); color: #ffd700; }
+    }
+  </style>
+
+</body>
+</html>
