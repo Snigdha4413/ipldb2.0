@@ -1,0 +1,16 @@
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="topbar-brand">🏏 <span>IPL AUCTION</span></a>
+    {% if back_url is defined and back_url %}
+    <a href="{{ back_url }}" class="back-link">← {{ back_label }}</a>
+    {% endif %}
+  </div>
+  <div class="topbar-right">
+    <a href="/auction" class="live-pill {% if is_admin %}admin-pill{% endif %}">
+      <span class="live-dot"></span>
+      {{ "Admin" if is_admin else "Live Room" }}
+    </a>
+    <span class="username">{{ user }}</span>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+</nav>
