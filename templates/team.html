@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ team_name }} — IPL Auction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  {% set back_url = "/" %}
+  {% set back_label = "Teams" %}
+  {% include 'topbar.html' %}
+
+  {% set team_logos = {
+    'RCB': 'https://upload.wikimedia.org/wikipedia/en/2/2a/Royal_Challengers_Bangalore_2020.svg',
+    'MI':  'https://upload.wikimedia.org/wikipedia/en/c/cd/Mumbai_Indians_Logo.svg',
+    'CSK': 'https://upload.wikimedia.org/wikipedia/en/2/2b/Chennai_Super_Kings_Logo.svg',
+    'RR':  'https://upload.wikimedia.org/wikipedia/en/6/60/Rajasthan_Royals_Logo.svg',
+    'GT':  'https://upload.wikimedia.org/wikipedia/en/0/09/Gujarat_Titans_Logo.svg'
+  } %}
+  {% set team_colors = {
+    'RCB': '#cc0000', 'MI': '#004ba0', 'CSK': '#f5a623', 'RR': '#d4267a', 'GT': '#1c4973'
+  } %}
+  {% set color = team_colors.get(team_name, '#1a1a2e') %}
+  {% set logo = team_logos.get(team_name, '') %}
+
+  <div class="team-hero" style="--team-color: {{ color }}">
+    <div class="team-hero-bg"></div>
+    {% if logo %}
+    <img src="{{ logo }}" class="team-hero-logo" alt="{{ team_name }}"
+         onerror="this.style.display='none'">
+    {% endif %}
+    <div class="team-hero-text">
+      <h1>{{ team_name }}</h1>
+      <p>{{ players | length }} players in squad</p>
+    </div>
+  </div>
+
+  <div class="players">
+    {% for p in players %}
+    <div class="card" style="--team-color: {{ color }}">
+      <div class="card-photo-wrap">
+        {% if p.photo_url %}
+        <img src="{{ p.photo_url }}" alt="{{ p.name }}" class="card-photo"
+             onerror="this.src='/static/default-player.png'; this.onerror=null;">
+        {% else %}
+        <div class="card-photo-placeholder">{{ p.name[0] }}</div>
+        {% endif %}
+        <div class="card-role-badge">{{ p.role }}</div>
+      </div>
+
+      <div class="card-body">
+        <h2 class="card-name">{{ p.name }}</h2>
+        <p class="card-country">{{ p.country }}</p>
+
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-val">{{ p.ipl_matches }}</span>
+            <span class="stat-lbl">Matches</span>
+          </div>
+          {% if p.role in ['Batsman', 'Wicketkeeper', 'All-Rounder'] %}
+          <div class="stat">
+            <span class="stat-val">{{ p.ipl_runs }}</span>
+            <span class="stat-lbl">Runs</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">{{ "%.0f"|format(p.strike_rate) }}</span>
+            <span class="stat-lbl">SR</span>
+          </div>
+          {% endif %}
+          {% if p.role in ['Bowler', 'All-Rounder'] %}
+          <div class="stat">
+            <span class="stat-val">{{ p.ipl_wickets }}</span>
+            <span class="stat-lbl">Wkts</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">{{ p.economy }}</span>
+            <span class="stat-lbl">Eco</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="card-bid-row">
+          <div>
+            <p class="card-bid-label">Current Bid</p>
+            <p class="card-bid-value">₹{{ p.highest_bid }}L</p>
+          </div>
+          <div>
+            <p class="card-bid-label">Base Price</p>
+            <p class="card-base-price">₹{{ p.base_price }}L</p>
+          </div>
+        </div>
+
+        {% if p.highest_bid > 0 %}
+        <p class="card-bidder">🏆 {{ p.top_bidder }}</p>
+        {% else %}
+        <p class="card-bidder muted">No bids yet</p>
+        {% endif %}
+
+        <a href="/player/{{ p.id }}"><button class="card-btn">{{ "View Bids" if is_admin else "Bid Now" }}</button></a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>
