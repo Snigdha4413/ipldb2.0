@@ -299,12 +299,14 @@ def bid():
     player_id = request.form["player_id"]
     bidder = session["user"]
     amount = int(request.form["bid_amount"])
+    from_auction = request.form.get("from_auction")
 
-    # Check timer
-    if auction_state["paused"]:
-        return "Auction is paused!", 400
-    if auction_state["timer_end"] and time.time() > auction_state["timer_end"]:
-        return "Auction time has ended!", 400
+    # Only enforce timer when bidding from the auction room
+    if from_auction:
+        if auction_state["paused"]:
+            return redirect(url_for("auction_room"))
+        if auction_state["timer_end"] and time.time() > auction_state["timer_end"]:
+            return redirect(url_for("auction_room"))
 
     with engine.connect() as conn:
         current = conn.execute(
@@ -312,7 +314,9 @@ def bid():
         ).scalar() or 0
 
         if amount <= current:
-            return f"Bid must be higher than ₹{current}!", 400
+            if from_auction:
+                return redirect(url_for("auction_room"))
+            return redirect(url_for("player", id=player_id))
 
         conn.execute(
             text("INSERT INTO bids (player_id, bidder, bid_amount) VALUES (:player_id, :bidder, :amount)"),
@@ -320,8 +324,7 @@ def bid():
         )
         conn.commit()
 
-    # If bid from auction room, redirect back there
-    if request.form.get("from_auction"):
+    if from_auction:
         return redirect(url_for("auction_room"))
     return redirect(url_for("player", id=player_id))
 
