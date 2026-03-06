@@ -120,6 +120,8 @@ def team(team_name):
                 "ipl_runs": getattr(p, 'ipl_runs', 0) or 0,
                 "ipl_wickets": getattr(p, 'ipl_wickets', 0) or 0,
                 "ipl_matches": getattr(p, 'ipl_matches', 0) or 0,
+                "strike_rate": float(getattr(p, 'strike_rate', 0) or 0),
+                "economy": float(getattr(p, 'economy', 0) or 0),
                 "base_price": getattr(p, 'base_price', 0) or 0,
                 "photo_url": getattr(p, 'photo_url', '') or '',
                 "highest_bid": highest,
